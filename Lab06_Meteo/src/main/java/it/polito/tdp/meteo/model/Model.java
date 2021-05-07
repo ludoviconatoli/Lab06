@@ -28,37 +28,56 @@ public class Model {
 	
 	int contatore = 0;
 	int contatoreGiorniPerCitta = 0;
-	List<String> s = new ArrayList<>();
-	List<String> soluzione = new ArrayList<>();
+	List<String> s ;
+	List<String> soluzioneMigliore ;
 	int costoMinimo = 100*15;
+	
 	// of course you can change the String output with what you think works best
-	public List<String> trovaSequenza(int mese, List<Rilevamento> r, int contatore, int n_cambi) {
+	public List<String> trovaSequenza(int mese, List<Rilevamento> r, int contatore, int costo) {
 		
-		if(contatore > NUMERO_GIORNI_TOTALI)
-			return null;
+		s = new ArrayList<>();
+		soluzioneMigliore = new ArrayList<>();
+		List<Rilevamento> sol = new ArrayList<>();
 		
-		if(contatore == NUMERO_GIORNI_TOTALI) {
-			int costo;
-			for(int i=0; i<r.size(); i++)
-			{
-				for(int j=0; j<s.size(); j++)
-				{
-					if(r.get(i).getLocalita().equals(s.get(i)) && r.get(i).getData().getDay() == j)
-						costo = costo + r.get(i).getUmidita(); 
-				}
-				
-			}
-			costo = costo + 100*n_cambi;
-			if(costo < costoMinimo)
-				soluzione = s;
-			return s;
-		}
+		cerca(r, sol, contatore, costo);
 		
-	    this.contatoreGiorniPerCitta ++;
-		contatore++;
-		
-		return s;
+		return soluzioneMigliore;
 	}
 	
-
+	public void cerca(List<Rilevamento> r, List<Rilevamento> parziale, int contatore, int costo) {
+		if(contatore > NUMERO_GIORNI_TOTALI)
+			return ;
+		
+		if(contatore == NUMERO_GIORNI_TOTALI) {
+			
+			for(int i=1; i<parziale.size(); i++)
+			{
+				costo += parziale.get(i-1).getUmidita();
+				if(!parziale.get(i-1).getLocalita().equals(parziale.get(i).getLocalita()))
+					costo += 100;
+			}
+			
+			if(costo < costoMinimo) {
+				costoMinimo = costo;
+				for(Rilevamento ri: parziale) {
+					s.add(ri.getLocalita());
+				}
+				soluzioneMigliore.addAll(s);
+			}
+			
+		}
+		
+		//ricorsione
+		for(Rilevamento ri: r) {
+			if(!parziale.contains(ri) && contatore > this.NUMERO_GIORNI_CITTA_CONSECUTIVI_MIN
+					&& contatore < this.NUMERO_GIORNI_CITTA_MAX) {
+				parziale.add(ri);
+				contatore++;
+				if(ri.getUmidita() < 100) {
+					//cambio citta
+				}
+					//se no rimango e incremento ancora il contatore
+			}
+		}
+	}
 }
