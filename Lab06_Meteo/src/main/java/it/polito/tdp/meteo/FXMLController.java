@@ -5,8 +5,10 @@
 package it.polito.tdp.meteo;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
+import it.polito.tdp.meteo.model.Citta;
 import it.polito.tdp.meteo.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -37,19 +39,34 @@ public class FXMLController {
 
     @FXML
     void doCalcolaSequenza(ActionEvent event) {
-
+    	
+    	int mese = this.boxMese.getValue();
+    	List<Citta> localita = this.model.trovaSequenza(mese);
+    	
+    	
+    	this.txtResult.appendText("Sequenza migliore per il mese " + mese + "\n");
+    	for(Citta c: localita) {
+    		this.txtResult.appendText(c.toString() +"\n");
+    	}
+    	
     }
 
     @FXML
     void doCalcolaUmidita(ActionEvent event) {
+    	this.txtResult.clear();
     	Integer i = this.boxMese.getValue();
     	if(i == null) {
     		this.txtResult.setText("Devi selezionare un mese");
     		return;
     	}
-    	String s = this.model.getUmiditaMedia(i);
     	
-    	this.txtResult.setText(s);
+    	for(Citta c: this.model.getLeCitta())
+    	{
+    		Double d = this.model.getUmiditaMedia(i, c);
+    		txtResult.appendText(c.toString() + " " + d + "\n");
+    	}
+    	
+    	txtResult.appendText("\n");
     }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
